@@ -1,4 +1,4 @@
-﻿namespace sharp2sem
+﻿namespace sharp2sem._20
 {
     public class ListikNode
     {
@@ -9,6 +9,11 @@
         {
             Value = value;
             Next = null;
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }

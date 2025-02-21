@@ -4,19 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sharp2sem
+namespace sharp2sem._20
 {
     public class Listik
     {
-        private ListikNode head;
-        private ListikNode tail;
+        private ListikNode _head;
+        private ListikNode _tail;
 
-        public bool IsEmpty => head == null;
+        public bool IsEmpty => _head == null;
+        public ListikNode Head => _head;
+        public ListikNode Tail => _tail;
 
         public Listik()
         {
-            head = null;
-            tail = null;
+            _head = null;
+            _tail = null;
         }
 
         public int TakeFirst()
@@ -26,12 +28,13 @@ namespace sharp2sem
                 throw new Exception("Список пуст!");
             }
 
-            ListikNode firstElement = head;
-            head = head.Next;
+            ListikNode firstElement = _head;
+            _head = _head.Next;
             if (IsEmpty)
             {
-                tail = null;
+                _tail = null;
             }
+
             return firstElement.Value;
         }
 
@@ -40,13 +43,13 @@ namespace sharp2sem
             ListikNode newItem = new ListikNode(value);
             if (IsEmpty)
             {
-                head = newItem;
-                tail = newItem;
+                _head = newItem;
+                _tail = newItem;
             }
             else
             {
-                newItem.Next = head;
-                head = newItem;
+                newItem.Next = _head;
+                _head = newItem;
             }
         }
 
@@ -57,23 +60,23 @@ namespace sharp2sem
                 throw new Exception("Список пуст!");
             }
 
-            ListikNode lastElement = head;
-            if (head.Next == null)
+            ListikNode lastElement = _head;
+            if (_head.Next == null)
             {
-                head = null;
-                tail = null;
+                _head = null;
+                _tail = null;
             }
             else
             {
-                while (lastElement.Next != tail)
+                while (lastElement.Next != _tail)
                 {
                     lastElement = lastElement.Next;
                 }
-                ListikNode temp = tail;
-                tail = lastElement;
-                lastElement = temp;
-                tail.Next = null;
+
+                (_tail, lastElement) = (lastElement, _tail);
+                _tail.Next = null;
             }
+
             return lastElement.Value;
         }
 
@@ -82,13 +85,13 @@ namespace sharp2sem
             ListikNode newItem = new ListikNode(value);
             if (IsEmpty)
             {
-                head = newItem;
-                tail = newItem;
+                _head = newItem;
+                _tail = newItem;
             }
             else
             {
-                tail.Next = newItem;
-                tail = newItem;
+                _tail.Next = newItem;
+                _tail = newItem;
             }
         }
 
@@ -101,14 +104,16 @@ namespace sharp2sem
                 {
                     break;
                 }
+
                 pointer = pointer.Next;
             }
+
             return pointer;
         }
 
         public ListikNode Find(int key)
         {
-            return Find(head, key);
+            return Find(_head, key);
         }
 
         public void Delete(int key)
@@ -118,11 +123,11 @@ namespace sharp2sem
                 throw new Exception("Список пуст!");
             }
 
-            ListikNode currentElement = head;
-            if (head.Next == null)
+            ListikNode currentElement = _head;
+            if (_head.Next == null)
             {
-                head = null;
-                tail = null;
+                _head = null;
+                _tail = null;
             }
             else
             {
@@ -130,6 +135,7 @@ namespace sharp2sem
                 {
                     currentElement = currentElement.Next;
                 }
+
                 ListikNode itemToDelete = currentElement.Next;
                 currentElement.Next = itemToDelete.Next;
                 itemToDelete.Next = null;
@@ -145,6 +151,24 @@ namespace sharp2sem
                 newItem.Next = pointer.Next;
                 pointer.Next = newItem;
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            ListikNode current = _head;
+            while (current != null)
+            {
+                if (current != _head)
+                {
+                    builder.Append(" ");
+                }
+
+                builder.Append(current.Value);
+                current = current.Next;
+            }
+
+            return builder.ToString();
         }
     }
 }
