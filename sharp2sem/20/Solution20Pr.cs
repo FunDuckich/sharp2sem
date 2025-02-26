@@ -1,20 +1,20 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.IO;
 
 namespace sharp2sem._20
 {
-    public class Solution20Pr
+    public static class Solution20Pr
     {
         public static void Execute()
         {
+            string inputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\input.txt";
+            string outputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\output.txt";
             Listik list = new Listik();
-            using (StreamReader inpF =
-                   new StreamReader(@"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\input.txt"))
+            using (StreamReader inF = new StreamReader(inputFilePath))
             {
                 Regex regForNums = new Regex(@"-?\d+");
                 string line;
-                while ((line = inpF.ReadLine()) != null)
+                while ((line = inF.ReadLine()) != null)
                 {
                     MatchCollection numsMatches = regForNums.Matches(line);
                     foreach (Match num in numsMatches)
@@ -24,30 +24,12 @@ namespace sharp2sem._20
                 }
             }
 
-            using (StreamWriter outpF =
-                   new StreamWriter(@"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\output.txt", false))
+            using (StreamWriter outF =
+                   new StreamWriter(outputFilePath, false))
             {
-                outpF.WriteLine(list.ToString());
-                ListikNode currentItem = list.Head;
-                while (true)
-                {
-                    if (currentItem == null)
-                    {
-                        break;
-                    }
-
-                    if (Math.Abs(currentItem.Value) % 2 == 0)
-                    {
-                        list.Insert(currentItem, currentItem.Value);
-                        currentItem = currentItem.Next.Next;
-                    }
-                    else
-                    {
-                        currentItem = currentItem.Next;
-                    }
-                }
-
-                outpF.WriteLine(list.ToString());
+                outF.WriteLine(list);
+                list.DoubleOdds();
+                outF.WriteLine(list);
             }
         }
     }

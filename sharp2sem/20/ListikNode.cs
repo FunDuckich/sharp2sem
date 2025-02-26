@@ -11,6 +11,12 @@
             Next = null;
         }
 
+        public ListikNode(ListikNode source)
+        {
+            Value = source.Value;
+            Next = source.Next;
+        }
+
         public override string ToString()
         {
             return Value.ToString();

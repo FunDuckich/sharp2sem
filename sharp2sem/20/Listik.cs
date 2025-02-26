@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace sharp2sem._20
 {
@@ -12,8 +9,6 @@ namespace sharp2sem._20
         private ListikNode _tail;
 
         public bool IsEmpty => _head == null;
-        public ListikNode Head => _head;
-        public ListikNode Tail => _tail;
 
         public Listik()
         {
@@ -95,9 +90,9 @@ namespace sharp2sem._20
             }
         }
 
-        public ListikNode Find(ListikNode searchBegin, int key)
+        private ListikNode Find(ListikNode startSearchFrom, int key)
         {
-            ListikNode pointer = searchBegin;
+            ListikNode pointer = startSearchFrom;
             while (pointer != null)
             {
                 if (pointer.Value == key)
@@ -111,7 +106,7 @@ namespace sharp2sem._20
             return pointer;
         }
 
-        public ListikNode Find(int key)
+        private ListikNode Find(int key)
         {
             return Find(_head, key);
         }
@@ -150,6 +145,31 @@ namespace sharp2sem._20
                 ListikNode newItem = new ListikNode(value);
                 newItem.Next = pointer.Next;
                 pointer.Next = newItem;
+            }
+        }
+
+        public void DoubleOdds()
+        {
+            ListikNode currentItem = _head;
+            while (true)
+            {
+                if (currentItem == null)
+                {
+                    break;
+                }
+
+                if (Math.Abs(currentItem.Value) % 2 == 0)
+                {
+                    ListikNode nextNode = currentItem.Next;
+                    ListikNode duplicateNode = new ListikNode(currentItem);
+                    currentItem.Next = duplicateNode;
+                    duplicateNode.Next = nextNode;
+                    currentItem = nextNode;
+                }
+                else
+                {
+                    currentItem = currentItem.Next;
+                }
             }
         }
 
