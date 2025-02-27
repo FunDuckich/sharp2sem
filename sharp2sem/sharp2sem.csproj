@@ -43,6 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="18_19\Client.cs" />
+    <Compile Include="18_19\IDepositor.cs" />
+    <Compile Include="18_19\ILoaner.cs" />
+    <Compile Include="18_19\Individual.cs" />
+    <Compile Include="18_19\LegalEntity.cs" />
+    <Compile Include="18_19\Solution1819Pr.cs" />
     <Compile Include="20\Solution20Pr.cs" />
     <Compile Include="20\Listik.cs" />
     <Compile Include="20\ListikNode.cs" />
