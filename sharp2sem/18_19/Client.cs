@@ -3,7 +3,7 @@
 namespace sharp2sem._18_19
 {
     [Serializable]
-    public abstract class Client
+    public abstract class Client : IComparable<Client>
     {
         public int ClientId { get; protected set; }
         private decimal _balance;
@@ -53,6 +53,11 @@ namespace sharp2sem._18_19
         public void Withdraw(decimal amount)
         {
             Balance -= amount;
+        }
+
+        public int CompareTo(Client other)
+        {
+            return RegistrationDate.CompareTo(other.RegistrationDate);
         }
     }
 }

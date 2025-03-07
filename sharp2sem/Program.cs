@@ -7,7 +7,7 @@ namespace sharp2sem
     {
         static void Main(string[] args)
         {
-            Solution1819Pr.Execute();
+            Solution20Pr.Execute();
         }
     }
 }

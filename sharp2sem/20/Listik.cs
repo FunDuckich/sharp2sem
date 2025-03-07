@@ -151,20 +151,14 @@ namespace sharp2sem._20
         public void DoubleOdds()
         {
             ListikNode currentItem = _head;
-            while (true)
+            while (currentItem != null)
             {
-                if (currentItem == null)
-                {
-                    break;
-                }
-
                 if (Math.Abs(currentItem.Value) % 2 == 0)
                 {
-                    ListikNode nextNode = currentItem.Next;
                     ListikNode duplicateNode = new ListikNode(currentItem);
+                    duplicateNode.Next = currentItem.Next;
                     currentItem.Next = duplicateNode;
-                    duplicateNode.Next = nextNode;
-                    currentItem = nextNode;
+                    currentItem = duplicateNode.Next;
                 }
                 else
                 {

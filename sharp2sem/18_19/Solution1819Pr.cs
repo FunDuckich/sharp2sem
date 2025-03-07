@@ -9,10 +9,10 @@ namespace sharp2sem._18_19
     {
         public static void Execute()
         {
-            string outputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\18_19\output.txt";
+            string outputFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\18_19\output.txt";
             using (StreamWriter outF = new StreamWriter(outputFilePath, false))
             {
-                string binaryFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\18_19\data.dat";
+                string binaryFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\18_19\data.dat";
                 BinaryFormatter formatter = new BinaryFormatter();
                 List<Client> clients = new List<Client>();
                 using (FileStream fs = new FileStream(binaryFilePath, FileMode.OpenOrCreate))

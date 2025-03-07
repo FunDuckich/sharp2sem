@@ -7,8 +7,8 @@ namespace sharp2sem._20
     {
         public static void Execute()
         {
-            string inputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\input.txt";
-            string outputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\20\output.txt";
+            string inputFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\20\input.txt";
+            string outputFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\20\output.txt";
             Listik list = new Listik();
             using (StreamReader inF = new StreamReader(inputFilePath))
             {
