@@ -17,8 +17,10 @@ namespace sharp2sem._18_19
         public Individual(int clientId, string firstName) : base(clientId)
         {
             FirstName = firstName;
-            RegistrationDate = Now;
+            //RegistrationDate = Now;
+            RegistrationDate = Now.AddDays(-1);
         }
+
 
         public void OpenDeposit(decimal amount)
         {

@@ -24,16 +24,16 @@ namespace sharp2sem._18_19
                 }
                 
                 outF.WriteLine("Данные о клиентах из бинарного файла:");
+                clients.Sort();
+
                 foreach (Client client in clients)
                 {
                     outF.WriteLine(client);
                     outF.WriteLine();
                 }
-                outF.WriteLine("---------------------------");
-                
-                clients.Clear();
-                clients.Add(new Individual(0, "Платон"));
+
                 clients.Add(new LegalEntity(1, "BibusHolding"));
+                clients.Add(new Individual(0, "Платон"));
                 
                 outF.WriteLine();
                 outF.WriteLine("Новые данные:");

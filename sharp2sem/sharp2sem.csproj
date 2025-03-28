@@ -52,6 +52,8 @@
     <Compile Include="20\Solution20Pr.cs" />
     <Compile Include="20\Listik.cs" />
     <Compile Include="20\ListikNode.cs" />
+    <Compile Include="21_1\BinaryTree.cs" />
+    <Compile Include="21_1\Solution21_1Pr.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
