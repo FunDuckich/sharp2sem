@@ -1,6 +1,4 @@
-﻿using sharp2sem._18_19;
-using sharp2sem._20;
-using sharp2sem._21_1;
+﻿using sharp2sem._21_2;
 
 namespace sharp2sem
 {
@@ -8,7 +6,7 @@ namespace sharp2sem
     {
         static void Main(string[] args)
         {
-            Solution21_1Pr.Execute();
+            Solution212Pr.Execute();
         }
     }
 }

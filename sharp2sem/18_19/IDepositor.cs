@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sharp2sem._18_19
+﻿namespace sharp2sem._18_19
 {
     public interface IDepositor
     {

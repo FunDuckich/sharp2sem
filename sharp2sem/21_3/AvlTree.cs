@@ -1,21 +1,87 @@
 ﻿using System;
 using System.IO;
 
-namespace sharp2sem._21_1
+namespace sharp2sem._21_3
 {
-    public class BinaryTree 
+    public class AvlTree 
     {
         private class Node
         {
             public int Inf;
-            public Node Left;
-            public Node Right;
+            public int Height; 
+            public Node Left; 
+            public Node Right; 
 
             public Node(int nodeInf)
             {
                 Inf = nodeInf;
+                Height = 1;
                 Left = null;
                 Right = null;
+            }
+            
+            public int BalanceFactor
+            {
+                get
+                {
+                    int rh = (this.Right != null) ? this.Right.Height : 0;
+                    int lh = (this.Left != null) ? this.Left.Height : 0;
+                    return rh - lh;
+                }
+            }
+
+            //пересчитывает высоту узла
+            public void NewHeight()
+            {
+                int rh = (this.Right != null) ? this.Right.Height : 0;
+                int lh = (this.Left != null) ? this.Left.Height : 0;
+                this.Height = ((rh > lh) ? rh : lh) + 1;
+            }
+
+            //правый поворот
+            public static void RotationRigth(ref Node t)
+            {
+                Node x = t.Left;
+                t.Left = x.Right;
+                x.Right = t;
+                t.NewHeight();
+                x.NewHeight();
+                t = x;
+            }
+
+            //левый поворот
+            public static void RotationLeft(ref Node t)
+            {
+                Node x = t.Right;
+                t.Right = x.Left;
+                x.Left = t;
+                t.NewHeight();
+                x.NewHeight();
+                t = x;
+            }
+
+            //балансировка
+            public static void Rotation(ref Node t)
+            {
+                t.NewHeight();
+                if (t.BalanceFactor == 2)
+                {
+                    if (t.Right.BalanceFactor < 0)
+                    {
+                        RotationRigth(ref t.Right);
+                    }
+
+                    RotationLeft(ref t);
+                }
+
+                if (t.BalanceFactor == -2)
+                {
+                    if (t.Left.BalanceFactor > 0)
+                    {
+                        RotationLeft(ref t.Left);
+                    }
+                    RotationRigth(ref t);
+                }
             }
 
             public static void Add(ref Node r, int nodeInf)
@@ -35,24 +101,26 @@ namespace sharp2sem._21_1
                         Add(ref r.Right, nodeInf);
                     }
                 }
+
+                Rotation(ref r);
             }
 
-            public static void Preorder(Node r, StreamWriter file)
+            public static void Preorder(Node r, StreamWriter file) 
             {
                 if (r != null)
                 {
-                    file.Write("{0} ", r.Inf);
+                    file.Write("({0} {1}) ", r.Inf, r.Height);
                     Preorder(r.Left, file);
                     Preorder(r.Right, file);
                 }
             }
 
-            public static void Inorder(Node r, StreamWriter file)
+            public static void Inorder(Node r, StreamWriter file) 
             {
                 if (r != null)
                 {
                     Inorder(r.Left, file);
-                    file.Write("{0} ", r.Inf);
+                    file.Write("({0} {1}) ", r.Inf, r.Height);
                     Inorder(r.Right, file);
                 }
             }
@@ -63,10 +131,10 @@ namespace sharp2sem._21_1
                 {
                     Postorder(r.Left, file);
                     Postorder(r.Right, file);
-                    file.Write("{0} ", r.Inf);
+                    file.Write("({0} {1}) ", r.Inf, r.Height);
                 }
             }
-
+            
             public static void Search(Node r, int key, out Node item)
             {
                 if (r == null)
@@ -92,7 +160,7 @@ namespace sharp2sem._21_1
                     }
                 }
             }
-
+            
             private static void Del(Node t, ref Node tr)
             {
                 if (tr.Right != null)
@@ -110,7 +178,7 @@ namespace sharp2sem._21_1
             {
                 if (t == null)
                 {
-                    throw new Exception("Данное значение в дереве отсутствует");
+                    Console.WriteLine("Данное значение в дереве отсутствует");
                 }
                 else
                 {
@@ -143,47 +211,22 @@ namespace sharp2sem._21_1
                             }
                         }
                     }
+
+                    Rotation(ref t);
                 }
             }
+        } 
 
-            public static void FindMinValues(Node node, ref int minValue, ref int minCount)
-            {
-                if (node != null)
-                {
-                    Node current = node;
-                    minValue = current.Inf;
-                    while (current.Left != null)
-                    {
-                        current = current.Left;
-                        if (current.Inf < minValue)
-                        {
-                            minValue = current.Inf;
-                        }
-                    }
-
-                    if (current.Inf == minValue)
-                    {
-                        minCount += 1;
-                        FindMinValues(current.Right, ref minValue, ref minCount);
-                    }
-                }
-            }
-        }
-
-        private Node _tree;
+        private Node _tree; 
         
-        public int Inf
-        {
-            set => _tree.Inf = value;
-            get => _tree.Inf;
-        }
+        public int Inf => _tree.Inf;
 
-        public BinaryTree()
+        public AvlTree() 
         {
             _tree = null;
         }
 
-        private BinaryTree(Node r)
+        private AvlTree(Node r) 
         {
             _tree = r;
         }
@@ -192,7 +235,7 @@ namespace sharp2sem._21_1
         {
             Node.Add(ref _tree, nodeInf);
         }
-
+        
         public void Preorder(StreamWriter file)
         {
             Node.Preorder(_tree, file);
@@ -208,22 +251,16 @@ namespace sharp2sem._21_1
             Node.Postorder(_tree, file);
         }
 
-        public BinaryTree Search(int key)
+        public AvlTree Search(int key)
         {
-            Node r;
-            Node.Search(_tree, key, out r);
-            BinaryTree t = new BinaryTree(r);
+            Node.Search(_tree, key, out Node r);
+            AvlTree t = new AvlTree(r);
             return t;
         }
 
         public void Delete(int key)
         {
             Node.Delete(ref _tree, key);
-        }
-
-        public void FindMinValues(ref int minValue, ref int minCount)
-        {
-            Node.FindMinValues(_tree, ref minValue, ref minCount);
         }
     }
 }
