@@ -57,6 +57,7 @@
     <Compile Include="21_2\BinaryTree.cs" />
     <Compile Include="21_2\Solution212Pr.cs" />
     <Compile Include="21_3\AvlTree.cs" />
+    <Compile Include="22_1\Orgraph.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
