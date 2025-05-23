@@ -43,6 +43,11 @@ public class Orgraph
                 }
             }
         }
+
+		public void Bfs()
+        {
+
+        }
 	}
 
 	public Orgraph()
