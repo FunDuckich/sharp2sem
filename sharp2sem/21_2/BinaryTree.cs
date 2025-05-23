@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace sharp2sem._21_1
+namespace sharp2sem._21_2
 {
     public class BinaryTree 
     {
@@ -146,28 +146,18 @@ namespace sharp2sem._21_1
                 }
             }
 
-            public static void FindMinValues(Node node, ref int minValue, ref int minCount)
+            public static int CountNodesAtLevel(Node node, int level, int currentLevel = 0)
             {
-                if (node != null)
-                {
-                    Node current = node;
-                    minValue = current.Inf;
-                    while (current.Left != null)
-                    {
-                        current = current.Left;
-                        if (current.Inf < minValue)
-                        {
-                            minValue = current.Inf;
-                        }
-                    }
+                if (node == null)
+                    return 0;
 
-                    if (current.Inf == minValue)
-                    {
-                        minCount += 1;
-                        FindMinValues(current.Right, ref minValue, ref minCount);
-                    }
-                }
+                if (currentLevel == level)
+                    return 1;
+
+                return CountNodesAtLevel(node.Left, level, currentLevel + 1) +
+                       CountNodesAtLevel(node.Right, level, currentLevel + 1);
             }
+
         }
 
         private Node _tree;
@@ -221,9 +211,11 @@ namespace sharp2sem._21_1
             Node.Delete(ref _tree, key);
         }
 
-        public void FindMinValues(ref int minValue, ref int minCount)
+        public int CountNodesAtLevel(int k)
         {
-            Node.FindMinValues(_tree, ref minValue, ref minCount);
+            return Node.CountNodesAtLevel(_tree, k);
         }
+
+        
     }
 }

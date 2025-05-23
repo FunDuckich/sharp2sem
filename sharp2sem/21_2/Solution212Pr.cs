@@ -1,30 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace sharp2sem._21_1
+namespace sharp2sem._21_2
 {
-    class Solution21_1Pr
+    public static class Solution212Pr
     {
         public static void Execute()
         {
-            string inputFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\21_1\input.txt";
-            string outputFilePath = @"C:\Users\petroved\source\repos\sharp2sem\sharp2sem\21_1\output.txt";
+            string inputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\21_2\input.txt";
+            string outputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\21_2\output.txt";
             List<int> inputNums = new List<int>();
+            int k = 0;
             using (StreamReader inF = new StreamReader(inputFilePath))
             {
-                Regex regForNums = new Regex(@"-?\d+");
                 string line;
                 while ((line = inF.ReadLine()) != null)
                 {
-                    MatchCollection numsMatches = regForNums.Matches(line);
-                    foreach (Match num in numsMatches)
+                    if (line.Length > 1)
                     {
-                        inputNums.Add(int.Parse(num.Value));
+                        string[] nums = line.Split(' ');
+                        foreach (string num in nums)
+                        {
+                            inputNums.Add(int.Parse(num));
+                        }
+                    }
+                    else
+                    {
+                        k = int.Parse(line);
                     }
                 }
             }
@@ -35,7 +37,7 @@ namespace sharp2sem._21_1
                 btree.Add(num);
             }
 
-            btree.FindMins(out int minValue, out int minCount);
+            int countedNodes = btree.CountNodesAtLevel(k);
 
             using (StreamWriter outF =
                    new StreamWriter(outputFilePath, false))
@@ -56,7 +58,7 @@ namespace sharp2sem._21_1
                 outF.Write("(postorder)");
                 outF.WriteLine();
 
-                outF.WriteLine("Минимальное значение {0} встречается в дереве {1} р.", minValue, minCount);
+                outF.WriteLine("На уровне {0} узлов - {1}", k, countedNodes);
 
             }
         }

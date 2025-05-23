@@ -53,7 +53,10 @@
     <Compile Include="20\Listik.cs" />
     <Compile Include="20\ListikNode.cs" />
     <Compile Include="21_1\BinaryTree.cs" />
-    <Compile Include="21_1\Solution21_1Pr.cs" />
+    <Compile Include="21_1\Solution211Pr.cs" />
+    <Compile Include="21_2\BinaryTree.cs" />
+    <Compile Include="21_2\Solution212Pr.cs" />
+    <Compile Include="21_3\AvlTree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -62,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="21_2\input.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
