@@ -58,6 +58,13 @@
     <Compile Include="21_2\Solution212Pr.cs" />
     <Compile Include="21_3\AvlTree.cs" />
     <Compile Include="22_1\Orgraph.cs" />
+    <Compile Include="21_3\Solution213Pr.cs" />
+    <Compile Include="22_1\Solution221Pr.cs" />
+    <Compile Include="22_2\Orgraph.cs" />
+    <Compile Include="22_2\Solution222Pr.cs" />
+    <Compile Include="22_3\City.cs" />
+    <Compile Include="22_3\Solution223Pr.cs" />
+    <Compile Include="22_3\WeightedGraph.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="21_2\input.txt" />
+    <Content Include="22_1\input.txt" />
+    <Content Include="22_2\input.txt" />
+    <Content Include="22_3\input.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

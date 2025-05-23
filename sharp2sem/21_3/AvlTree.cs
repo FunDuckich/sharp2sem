@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace sharp2sem._21_3
 {
-    public class AvlTree 
+    public class AvlTree
     {
         private class Node
         {
             public int Inf;
-            public int Height; 
-            public Node Left; 
-            public Node Right; 
+            public int Height;
+            public Node Left;
+            public Node Right;
 
             public Node(int nodeInf)
             {
@@ -19,248 +21,215 @@ namespace sharp2sem._21_3
                 Left = null;
                 Right = null;
             }
-            
+
             public int BalanceFactor
             {
                 get
                 {
-                    int rh = (this.Right != null) ? this.Right.Height : 0;
-                    int lh = (this.Left != null) ? this.Left.Height : 0;
+                    int rh = Right?.Height ?? 0;
+                    int lh = Left?.Height ?? 0;
                     return rh - lh;
                 }
             }
 
-            //пересчитывает высоту узла
-            public void NewHeight()
+            public void UpdateHeight()
             {
-                int rh = (this.Right != null) ? this.Right.Height : 0;
-                int lh = (this.Left != null) ? this.Left.Height : 0;
-                this.Height = ((rh > lh) ? rh : lh) + 1;
+                int rh = Right?.Height ?? 0;
+                int lh = Left?.Height ?? 0;
+                Height = (rh > lh ? rh : lh) + 1;
             }
 
-            //правый поворот
-            public static void RotationRigth(ref Node t)
+            public int CountNodes()
             {
-                Node x = t.Left;
-                t.Left = x.Right;
-                x.Right = t;
-                t.NewHeight();
-                x.NewHeight();
-                t = x;
+                int count = 1;
+                if (Left != null) count += Left.CountNodes();
+                if (Right != null) count += Right.CountNodes();
+                return count;
             }
 
-            //левый поворот
-            public static void RotationLeft(ref Node t)
+            public static Node RotateRight(Node y)
             {
-                Node x = t.Right;
-                t.Right = x.Left;
-                x.Left = t;
-                t.NewHeight();
-                x.NewHeight();
-                t = x;
+                if (y == null || y.Left == null) return y;
+                Node x = y.Left;
+                Node t2 = x.Right;
+
+                x.Right = y;
+                y.Left = t2;
+
+                y.UpdateHeight();
+                x.UpdateHeight();
+                return x;
             }
 
-            //балансировка
-            public static void Rotation(ref Node t)
+            public static Node RotateLeft(Node x)
             {
-                t.NewHeight();
-                if (t.BalanceFactor == 2)
+                if (x == null || x.Right == null) return x;
+                Node y = x.Right;
+                Node t2 = y.Left ?? throw new ArgumentNullException("x");
+
+                y.Left = x;
+                x.Right = t2;
+
+                x.UpdateHeight();
+                y.UpdateHeight();
+                return y;
+            }
+
+            public static Node Balance(Node node)
+            {
+                if (node == null) return null;
+                node.UpdateHeight();
+                int balance = node.BalanceFactor;
+
+                if (balance > 1)
                 {
-                    if (t.Right.BalanceFactor < 0)
+                    if (node.Right != null && (node.Right.BalanceFactor) < 0)
                     {
-                        RotationRigth(ref t.Right);
+                        node.Right = RotateRight(node.Right);
                     }
 
-                    RotationLeft(ref t);
+                    return RotateLeft(node);
                 }
 
-                if (t.BalanceFactor == -2)
+                if (balance < -1)
                 {
-                    if (t.Left.BalanceFactor > 0)
+                    if (node.Left != null && (node.Left.BalanceFactor) > 0)
                     {
-                        RotationLeft(ref t.Left);
+                        node.Left = RotateLeft(node.Left);
                     }
-                    RotationRigth(ref t);
+
+                    return RotateRight(node);
                 }
+
+                return node;
             }
 
-            public static void Add(ref Node r, int nodeInf)
+            public static Node Add(Node node, int inf)
             {
-                if (r == null)
-                {
-                    r = new Node(nodeInf);
-                }
+                if (node == null) return new Node(inf);
+
+                if (inf < node.Inf)
+                    node.Left = Add(node.Left, inf);
+                else if (inf > node.Inf)
+                    node.Right = Add(node.Right, inf);
                 else
-                {
-                    if (r.Inf > nodeInf)
-                    {
-                        Add(ref r.Left, nodeInf);
-                    }
-                    else
-                    {
-                        Add(ref r.Right, nodeInf);
-                    }
-                }
+                    return node;
 
-                Rotation(ref r);
+                return Balance(node);
             }
 
-            public static void Preorder(Node r, StreamWriter file) 
+            public static void InOrderTraversal(Node node, List<int> result)
             {
-                if (r != null)
-                {
-                    file.Write("({0} {1}) ", r.Inf, r.Height);
-                    Preorder(r.Left, file);
-                    Preorder(r.Right, file);
-                }
+                if (node == null) return;
+                InOrderTraversal(node.Left, result);
+                result.Add(node.Inf);
+                InOrderTraversal(node.Right, result);
             }
-
-            public static void Inorder(Node r, StreamWriter file) 
-            {
-                if (r != null)
-                {
-                    Inorder(r.Left, file);
-                    file.Write("({0} {1}) ", r.Inf, r.Height);
-                    Inorder(r.Right, file);
-                }
-            }
-
-            public static void Postorder(Node r, StreamWriter file)
-            {
-                if (r != null)
-                {
-                    Postorder(r.Left, file);
-                    Postorder(r.Right, file);
-                    file.Write("({0} {1}) ", r.Inf, r.Height);
-                }
-            }
-            
-            public static void Search(Node r, int key, out Node item)
-            {
-                if (r == null)
-                {
-                    item = null;
-                }
-                else
-                {
-                    if (r.Inf == key)
-                    {
-                        item = r;
-                    }
-                    else
-                    {
-                        if (r.Inf > key)
-                        {
-                            Search(r.Left, key, out item);
-                        }
-                        else
-                        {
-                            Search(r.Right, key, out item);
-                        }
-                    }
-                }
-            }
-            
-            private static void Del(Node t, ref Node tr)
-            {
-                if (tr.Right != null)
-                {
-                    Del(t, ref tr.Right);
-                }
-                else
-                {
-                    t.Inf = tr.Inf;
-                    tr = tr.Left;
-                }
-            }
-
-            public static void Delete(ref Node t, int key)
-            {
-                if (t == null)
-                {
-                    Console.WriteLine("Данное значение в дереве отсутствует");
-                }
-                else
-                {
-                    if (t.Inf > key)
-                    {
-                        Delete(ref t.Left, key);
-                    }
-                    else
-                    {
-                        if (t.Inf < key)
-                        {
-                            Delete(ref t.Right, key);
-                        }
-                        else
-                        {
-                            if (t.Left == null)
-                            {
-                                t = t.Right;
-                            }
-                            else
-                            {
-                                if (t.Right == null)
-                                {
-                                    t = t.Left;
-                                }
-                                else
-                                {
-                                    Del(t, ref t.Left);
-                                }
-                            }
-                        }
-                    }
-
-                    Rotation(ref t);
-                }
-            }
-        } 
-
-        private Node _tree; 
-        
-        public int Inf => _tree.Inf;
-
-        public AvlTree() 
-        {
-            _tree = null;
         }
 
-        private AvlTree(Node r) 
+        private Node _root;
+
+        public AvlTree()
         {
-            _tree = r;
+            _root = null;
         }
 
         public void Add(int nodeInf)
         {
-            Node.Add(ref _tree, nodeInf);
-        }
-        
-        public void Preorder(StreamWriter file)
-        {
-            Node.Preorder(_tree, file);
+            _root = Node.Add(_root, nodeInf);
         }
 
-        public void Inorder(StreamWriter file)
+        public List<int> GetInOrderTraversal()
         {
-            Node.Inorder(_tree, file);
+            List<int> result = new List<int>();
+            Node.InOrderTraversal(_root, result);
+            return result;
         }
 
-        public void Postorder(StreamWriter file)
+        public int CountNodes()
         {
-            Node.Postorder(_tree, file);
+            return _root?.CountNodes() ?? 0;
         }
 
-        public AvlTree Search(int key)
+        private static bool CanFormIdeallyBalancedTreeFromNodeCount(int nodeCount)
         {
-            Node.Search(_tree, key, out Node r);
-            AvlTree t = new AvlTree(r);
-            return t;
+            if (nodeCount <= 0) return true;
+            if (nodeCount == 1) return true;
+
+            int nodesForSubtrees = nodeCount - 1;
+            int leftSubtreeSize = nodesForSubtrees / 2;
+            int rightSubtreeSize = nodesForSubtrees - leftSubtreeSize;
+
+            return CanFormIdeallyBalancedTreeFromNodeCount(leftSubtreeSize) &&
+                   CanFormIdeallyBalancedTreeFromNodeCount(rightSubtreeSize);
         }
 
-        public void Delete(int key)
+        public bool TrySelectNodesForIdealBalance(int maxRemovals, StreamWriter file, out List<int> nodesToKeep,
+            out List<int> nodesToDelete)
         {
-            Node.Delete(ref _tree, key);
+            nodesToKeep = new List<int>();
+            nodesToDelete = new List<int>();
+            List<int> originalSortedNodes = GetInOrderTraversal();
+            int initialCount = originalSortedNodes.Count;
+
+            if (initialCount == 0)
+            {
+                file.WriteLine("Дерево пустое, оно уже идеально сбалансировано (0 узлов).");
+                return true;
+            }
+
+            for (int numRemoved = 0; numRemoved <= maxRemovals; numRemoved++)
+            {
+                int targetSize = initialCount - numRemoved;
+                if (targetSize <= 0) continue;
+
+                if (CanFormIdeallyBalancedTreeFromNodeCount(targetSize))
+                {
+                    // Если из targetSize узлов можно построить идеал. сбаланс. дерево,
+                    // то мы можем выбрать любые targetSize узлов из originalSortedNodes (например, первые, или последние, или средние).
+                    // Чтобы минимизировать "сложность" выбора, обычно выбирают центральный блок.
+                    // Однако, для задачи "удалить узлы", мы просто должны показать, что это возможно.
+                    // Любые targetSize узлов из отсортированного списка можно будет расположить в дереве поиска.
+                    // Нам нужно указать, КАКИЕ узлы удалить.
+                    // Если мы удаляем `numRemoved` узлов, мы можем удалить, например, `numRemoved` самых больших,
+                    // или `numRemoved` самых маленьких, или какие-то из середины.
+                    // Задача не уточняет, какие именно узлы удалять, если есть выбор.
+                    // "указать удаляемые узлы" - значит, нужно выбрать конкретные.
+                    // Простейший вариант - удалить numRemoved самых больших (или самых маленьких) элементов.
+
+                    if (initialCount >= targetSize) // Эта проверка уже есть через targetSize > 0
+                    {
+                        // Выбираем первые targetSize узлов для сохранения
+                        nodesToKeep = originalSortedNodes.Take(targetSize).ToList();
+                        // Остальные - на удаление
+                        nodesToDelete = originalSortedNodes.Skip(targetSize).ToList();
+
+                        // Убедимся, что количество удаляемых соответствует numRemoved
+                        // Это будет так, если мы взяли targetSize = initialCount - numRemoved
+                        if (nodesToDelete.Count == numRemoved)
+                        {
+                            file.WriteLine(
+                                $"Можно сделать дерево идеально сбалансированным, оставив {targetSize} узел(узлов) (удалив {numRemoved}).");
+                            if (nodesToDelete.Any())
+                            {
+                                file.WriteLine("Пример удаляемых узлов (самые большие): " +
+                                               string.Join(", ", nodesToDelete));
+                            }
+                            else
+                            {
+                                file.WriteLine(
+                                    "Удаление узлов не требуется, текущее количество узлов позволяет построить идеально сбалансированное дерево.");
+                            }
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            file.WriteLine(
+                $"Невозможно сделать дерево идеально сбалансированным, удалив не более {maxRemovals} узел(узлов).");
+            return false;
         }
     }
 }
