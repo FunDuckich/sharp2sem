@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace sharp2sem._21_3
 {
@@ -9,227 +7,115 @@ namespace sharp2sem._21_3
     {
         private class Node
         {
-            public int Inf;
-            public int Height;
-            public Node Left;
-            public Node Right;
+            public int Key, Height, Count;
+            public Node Left, Right;
 
-            public Node(int nodeInf)
+            public Node(int key)
             {
-                Inf = nodeInf;
+                Key = key;
                 Height = 1;
-                Left = null;
-                Right = null;
+                Count = 1;
             }
 
-            public int BalanceFactor
+            private void Update()
             {
-                get
-                {
-                    int rh = Right?.Height ?? 0;
-                    int lh = Left?.Height ?? 0;
-                    return rh - lh;
-                }
+                int lh = Left?.Height ?? 0, rh = Right?.Height ?? 0;
+                Height = Math.Max(lh, rh) + 1;
+                int lc = Left?.Count ?? 0, rc = Right?.Count ?? 0;
+                Count = lc + rc + 1;
             }
 
-            public void UpdateHeight()
+            private static int BalanceFactor(Node n)
             {
-                int rh = Right?.Height ?? 0;
-                int lh = Left?.Height ?? 0;
-                Height = (rh > lh ? rh : lh) + 1;
+                return (n?.Right?.Height ?? 0) - (n?.Left?.Height ?? 0);
             }
 
-            public int CountNodes()
+            private static Node RotateLeft(Node x)
             {
-                int count = 1;
-                if (Left != null) count += Left.CountNodes();
-                if (Right != null) count += Right.CountNodes();
-                return count;
-            }
-
-            public static Node RotateRight(Node y)
-            {
-                if (y == null || y.Left == null) return y;
-                Node x = y.Left;
-                Node t2 = x.Right;
-
-                x.Right = y;
-                y.Left = t2;
-
-                y.UpdateHeight();
-                x.UpdateHeight();
-                return x;
-            }
-
-            public static Node RotateLeft(Node x)
-            {
-                if (x == null || x.Right == null) return x;
-                Node y = x.Right;
-                Node t2 = y.Left ?? throw new ArgumentNullException("x");
-
+                Node y = x.Right, t = y.Left;
                 y.Left = x;
-                x.Right = t2;
-
-                x.UpdateHeight();
-                y.UpdateHeight();
+                x.Right = t;
+                x.Update();
+                y.Update();
                 return y;
             }
 
-            public static Node Balance(Node node)
+            private static Node RotateRight(Node y)
             {
-                if (node == null) return null;
-                node.UpdateHeight();
-                int balance = node.BalanceFactor;
-
-                if (balance > 1)
-                {
-                    if (node.Right != null && (node.Right.BalanceFactor) < 0)
-                    {
-                        node.Right = RotateRight(node.Right);
-                    }
-
-                    return RotateLeft(node);
-                }
-
-                if (balance < -1)
-                {
-                    if (node.Left != null && (node.Left.BalanceFactor) > 0)
-                    {
-                        node.Left = RotateLeft(node.Left);
-                    }
-
-                    return RotateRight(node);
-                }
-
-                return node;
+                Node x = y.Left, t = x.Right;
+                x.Right = y;
+                y.Left = t;
+                y.Update();
+                x.Update();
+                return x;
             }
 
-            public static Node Add(Node node, int inf)
+            private static Node Balance(Node n)
             {
-                if (node == null) return new Node(inf);
+                if (n == null) return null;
+                n.Update();
+                if (BalanceFactor(n) > 1)
+                {
+                    if (BalanceFactor(n.Right) < 0) n.Right = RotateRight(n.Right);
+                    return RotateLeft(n);
+                }
 
-                if (inf < node.Inf)
-                    node.Left = Add(node.Left, inf);
-                else if (inf > node.Inf)
-                    node.Right = Add(node.Right, inf);
+                if (BalanceFactor(n) < -1)
+                {
+                    if (BalanceFactor(n.Left) > 0) n.Left = RotateLeft(n.Left);
+                    return RotateRight(n);
+                }
+
+                return n;
+            }
+
+            public static Node Add(Node n, int key)
+            {
+                if (n == null) return new Node(key);
+                if (key < n.Key) n.Left = Add(n.Left, key);
+                else if (key > n.Key) n.Right = Add(n.Right, key);
+                return Balance(n);
+            }
+
+            private static Node FindMin(Node n)
+            {
+                while (n.Left != null) n = n.Left;
+                return n;
+            }
+
+            public static Node Delete(Node n, int key)
+            {
+                if (n == null) return null;
+                if (key < n.Key) n.Left = Delete(n.Left, key);
+                else if (key > n.Key) n.Right = Delete(n.Right, key);
                 else
-                    return node;
+                {
+                    if (n.Left == null) return n.Right;
+                    if (n.Right == null) return n.Left;
+                    Node m = FindMin(n.Right);
+                    n.Key = m.Key;
+                    n.Right = Delete(n.Right, m.Key);
+                }
 
-                return Balance(node);
-            }
-
-            public static void InOrderTraversal(Node node, List<int> result)
-            {
-                if (node == null) return;
-                InOrderTraversal(node.Left, result);
-                result.Add(node.Inf);
-                InOrderTraversal(node.Right, result);
+                return Balance(n);
             }
         }
 
         private Node _root;
 
-        public AvlTree()
+        public void Add(int key)
         {
-            _root = null;
+            _root = Node.Add(_root, key);
         }
 
-        public void Add(int nodeInf)
+        public bool TryIdealBalance(int n, out List<int> removed)
         {
-            _root = Node.Add(_root, nodeInf);
+            //
         }
 
-        public List<int> GetInOrderTraversal()
+        public int GetCount()
         {
-            List<int> result = new List<int>();
-            Node.InOrderTraversal(_root, result);
-            return result;
-        }
-
-        public int CountNodes()
-        {
-            return _root?.CountNodes() ?? 0;
-        }
-
-        private static bool CanFormIdeallyBalancedTreeFromNodeCount(int nodeCount)
-        {
-            if (nodeCount <= 0) return true;
-            if (nodeCount == 1) return true;
-
-            int nodesForSubtrees = nodeCount - 1;
-            int leftSubtreeSize = nodesForSubtrees / 2;
-            int rightSubtreeSize = nodesForSubtrees - leftSubtreeSize;
-
-            return CanFormIdeallyBalancedTreeFromNodeCount(leftSubtreeSize) &&
-                   CanFormIdeallyBalancedTreeFromNodeCount(rightSubtreeSize);
-        }
-
-        public bool TrySelectNodesForIdealBalance(int maxRemovals, StreamWriter file, out List<int> nodesToKeep,
-            out List<int> nodesToDelete)
-        {
-            nodesToKeep = new List<int>();
-            nodesToDelete = new List<int>();
-            List<int> originalSortedNodes = GetInOrderTraversal();
-            int initialCount = originalSortedNodes.Count;
-
-            if (initialCount == 0)
-            {
-                file.WriteLine("Дерево пустое, оно уже идеально сбалансировано (0 узлов).");
-                return true;
-            }
-
-            for (int numRemoved = 0; numRemoved <= maxRemovals; numRemoved++)
-            {
-                int targetSize = initialCount - numRemoved;
-                if (targetSize <= 0) continue;
-
-                if (CanFormIdeallyBalancedTreeFromNodeCount(targetSize))
-                {
-                    // Если из targetSize узлов можно построить идеал. сбаланс. дерево,
-                    // то мы можем выбрать любые targetSize узлов из originalSortedNodes (например, первые, или последние, или средние).
-                    // Чтобы минимизировать "сложность" выбора, обычно выбирают центральный блок.
-                    // Однако, для задачи "удалить узлы", мы просто должны показать, что это возможно.
-                    // Любые targetSize узлов из отсортированного списка можно будет расположить в дереве поиска.
-                    // Нам нужно указать, КАКИЕ узлы удалить.
-                    // Если мы удаляем `numRemoved` узлов, мы можем удалить, например, `numRemoved` самых больших,
-                    // или `numRemoved` самых маленьких, или какие-то из середины.
-                    // Задача не уточняет, какие именно узлы удалять, если есть выбор.
-                    // "указать удаляемые узлы" - значит, нужно выбрать конкретные.
-                    // Простейший вариант - удалить numRemoved самых больших (или самых маленьких) элементов.
-
-                    if (initialCount >= targetSize) // Эта проверка уже есть через targetSize > 0
-                    {
-                        // Выбираем первые targetSize узлов для сохранения
-                        nodesToKeep = originalSortedNodes.Take(targetSize).ToList();
-                        // Остальные - на удаление
-                        nodesToDelete = originalSortedNodes.Skip(targetSize).ToList();
-
-                        // Убедимся, что количество удаляемых соответствует numRemoved
-                        // Это будет так, если мы взяли targetSize = initialCount - numRemoved
-                        if (nodesToDelete.Count == numRemoved)
-                        {
-                            file.WriteLine(
-                                $"Можно сделать дерево идеально сбалансированным, оставив {targetSize} узел(узлов) (удалив {numRemoved}).");
-                            if (nodesToDelete.Any())
-                            {
-                                file.WriteLine("Пример удаляемых узлов (самые большие): " +
-                                               string.Join(", ", nodesToDelete));
-                            }
-                            else
-                            {
-                                file.WriteLine(
-                                    "Удаление узлов не требуется, текущее количество узлов позволяет построить идеально сбалансированное дерево.");
-                            }
-
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            file.WriteLine(
-                $"Невозможно сделать дерево идеально сбалансированным, удалив не более {maxRemovals} узел(узлов).");
-            return false;
+            return _root.Count;
         }
     }
 }

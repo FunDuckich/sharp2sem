@@ -14,82 +14,65 @@ namespace sharp2sem._21_3
             List<int> numbersForTree = new List<int>();
             int maxNodesToRemove = 0;
 
-            try
+            string[] allLines = File.ReadAllLines(inputFilePath);
+            if (allLines.Length == 0)
             {
-                string[] allLines = File.ReadAllLines(inputFilePath);
-                if (allLines.Length == 0)
+                using (StreamWriter sw = new StreamWriter(outputFilePath))
                 {
-                    using (StreamWriter sw = new StreamWriter(outputFilePath))
-                    {
-                        sw.WriteLine("Входной файл пуст.");
-                    }
-
-                    return;
+                    sw.WriteLine("Входной файл пуст.");
                 }
 
-                if (allLines.Length > 0 && !string.IsNullOrWhiteSpace(allLines[0]))
+                return;
+            }
+
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(allLines[i]))
                 {
-                    string[] numStrings = allLines[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string s in numStrings)
+                    string[] parts = allLines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (i == allLines.Length - 1)
                     {
-                        if (int.TryParse(s, out int num))
+                        if (parts.Length == 1 && int.TryParse(parts[0], out int n))
                         {
-                            numbersForTree.Add(num);
+                            maxNodesToRemove = n;
+                        }
+                    }
+                    else
+                    {
+                        foreach (string s in parts)
+                        {
+                            if (int.TryParse(s, out int num))
+                            {
+                                numbersForTree.Add(num);
+                            }
                         }
                     }
                 }
-
-                if (allLines.Length > 1)
-                {
-                    string lastNonEmptyLine = null;
-                    for (int i = allLines.Length - 1; i >= 0; i--)
-                    {
-                        if (!string.IsNullOrWhiteSpace(allLines[i]))
-                        {
-                            lastNonEmptyLine = allLines[i];
-                            break;
-                        }
-                    }
-
-                    if (lastNonEmptyLine != null && !int.TryParse(lastNonEmptyLine, out maxNodesToRemove))
-                    {
-                        maxNodesToRemove = 0;
-                    }
-                }
-                else if (allLines.Length == 1 && numbersForTree.Count > 1)
-                {
-                    maxNodesToRemove = 0;
-                }
-
-                AvlTree avlTree = new AvlTree();
-                foreach (int num in numbersForTree)
-                {
-                    avlTree.Add(num);
-                }
-
-                using (StreamWriter outF = new StreamWriter(outputFilePath, false))
-                {
-                    outF.WriteLine("Числа для построения дерева:");
-                    outF.WriteLine(string.Join(" ", numbersForTree));
-                    outF.WriteLine($"Максимальное количество узлов для удаления (N): {maxNodesToRemove}");
-                    outF.WriteLine($"Исходное количество узлов в АВЛ-дереве: {avlTree.CountNodes()}");
-
-
-                    avlTree.TrySelectNodesForIdealBalance(maxNodesToRemove, outF, out List<int> nodesToKeep,
-                        out List<int> nodesToDelete);
-                }
             }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine($"Ошибка: Входной файл не найден: {inputFilePath}");
 
-                File.WriteAllText(outputFilePath, $"Ошибка: Входной файл не найден: {inputFilePath}");
+            AvlTree avlTree = new AvlTree();
+            foreach (int num in numbersForTree)
+            {
+                avlTree.Add(num);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Произошла ошибка: {ex.Message}");
 
-                File.WriteAllText(outputFilePath, $"Произошла ошибка: {ex.Message}\n{ex.StackTrace}");
+            using (StreamWriter outF = new StreamWriter(outputFilePath, false))
+            {
+                outF.WriteLine("Числа для построения дерева:");
+                outF.WriteLine(string.Join(" ", numbersForTree));
+                outF.WriteLine($"Максимальное количество узлов для удаления (N): {maxNodesToRemove}");
+                outF.WriteLine($"Исходное количество узлов в АВЛ-дереве: {avlTree.GetCount()}");
+
+                if (avlTree.TryIdealBalance(maxNodesToRemove, out List<int> removed))
+                {
+                    outF.WriteLine("Можно удалить не более N узлов для идеального баланса.");
+                    outF.WriteLine("Удаляемые узлы:");
+                    outF.WriteLine(string.Join(" ", removed));
+                }
+                else
+                {
+                    outF.WriteLine("Невозможно удалить не более N узлов для идеального баланса.");
+                }
             }
         }
     }
