@@ -8,8 +8,8 @@ namespace sharp2sem._21_3
     {
         public static void Execute()
         {
-            string inputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\21_3\input.txt";
-            string outputFilePath = @"C:\Users\petro\RiderProjects\sharp2sem\sharp2sem\21_3\output.txt";
+            string inputFilePath = @"C:\Users\Анна\Source\Repos\sharp2sem\sharp2sem\21_3\input.txt";
+            string outputFilePath = @"C:\Users\Анна\Source\Repos\sharp2sem\sharp2sem\21_3\output.txt";
 
             List<int> numbersForTree = new List<int>();
             int maxNodesToRemove = 0;

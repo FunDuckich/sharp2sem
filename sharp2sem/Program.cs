@@ -1,4 +1,5 @@
 ﻿using sharp2sem._21_3;
+using sharp2sem.PostfixNotation;
 
 namespace sharp2sem
 {
@@ -6,7 +7,7 @@ namespace sharp2sem
     {
         static void Main(string[] args)
         {
-            Solution213Pr.Execute();
+            PostfixSolution.Execute();
         }
     }
 }
